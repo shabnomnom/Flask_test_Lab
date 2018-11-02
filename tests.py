@@ -41,6 +41,10 @@ class PartyTestsDatabase(unittest.TestCase):
         self.client = app.test_client()
         app.config['TESTING'] = True
 
+        with self.client as c:
+            with c.session_transaction() as sess:
+                sess['RSVP'] = True
+
         # Connect to test database (uncomment when testing database)
         connect_to_db(app, "postgresql:///testdb")
 
@@ -55,7 +59,8 @@ class PartyTestsDatabase(unittest.TestCase):
         db.drop_all()
 
     def test_games(self):
-        # FIXME: test that the games page displays the game from example_data()
+        """Test that games page displays game info from example_data()"""
+
         result = self.client.get("/games")
         self.assertIn(b'backgommon', result.data)
 
